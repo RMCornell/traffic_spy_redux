@@ -8,3 +8,43 @@ require 'minitest/autorun'
 require 'capybara'
 
 Capybara.app = TrafficSpy::Server
+
+DatabaseCleaner.strategy = :truncation, {except: %w[public.schema_migrations]}
+
+class FeatureTest < Minitest::Test
+  include Capybara::DSL
+  include Rack::Test::Methods
+  include Helpers
+
+  def app
+    TrafficSpy::Server
+  end
+
+  def setup
+    DatabaseCleaner.start
+  end
+
+  def teardown
+    DatabaseCleaner.clean
+  end
+end
+
+class ControllerTest < Minitest::Test
+  include Rack::Test::Methods
+
+  def app
+    TrafficSpy::Server
+  end
+
+  def setup
+    DatabaseCleaner.start
+  end
+
+  def teardown
+    DatabaseCleaner.clean
+  end
+end
+
+class ModelTest < Minitest::Test
+
+end
