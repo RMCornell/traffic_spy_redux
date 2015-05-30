@@ -2,12 +2,12 @@
 
 development:
   adapter: postgresql
-  database: traffic-spy-development
+  database: a-traffic-spy-development
 
 test:
   adapter: postgresql
-  database: traffic-spy-test
+  database: a-traffic-spy-test
 
 production:
   adapter: postgresql
-  database: traffic-spy-production
+  database: a-traffic-spy-production

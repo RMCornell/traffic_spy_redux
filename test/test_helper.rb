@@ -5,7 +5,10 @@ Bundler.require
 
 require File.expand_path("../../config/environment", __FILE__)
 require 'minitest/autorun'
+require 'minitest/pride'
 require 'capybara'
+require 'database_cleaner'
+require 'pry'
 
 Capybara.app = TrafficSpy::Server
 
@@ -14,7 +17,7 @@ DatabaseCleaner.strategy = :truncation, {except: %w[public.schema_migrations]}
 class FeatureTest < Minitest::Test
   include Capybara::DSL
   include Rack::Test::Methods
-  include Helpers
+
 
   def app
     TrafficSpy::Server
