@@ -1,15 +1,14 @@
 module TrafficSpy
   class ParseSource
-    attr_accessor :source
     def initialize(params)
-      @source = Source.create(identifier: params["identifier"],
+      @source = TrafficSpy::Source.create(identifier: params["identifier"],
                               root_url: params["rootUrl"])
     end
 
     def status
-      if source[:identifier].nil? || source[:root_url].nil?
+      if @source[:identifier] == nil || @source[:root_url] == nil
         400
-      elsif source.save
+      elsif @source.save
         200
       else
         403
@@ -17,10 +16,10 @@ module TrafficSpy
     end
 
     def body
-      if source.save
-        "{'identifier':'#{source[:identifier]}'}"
+      if @source.save
+        "{'identifier':'#{@source[:identifier]}'}"
       else
-        source.errors.full_messages
+        @source.errors.full_messages
       end
     end
   end

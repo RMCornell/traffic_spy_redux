@@ -5,15 +5,19 @@ module TrafficSpy
     end
 
     post '/sources' do
-      parsed_source = ParseSource.new(params)
+      parsed_source = TrafficSpy::ParseSource.new(params)
       status parsed_source.status
       body parsed_source.body
     end
 
-    post 'sources/:identifier/data' do
-      parsed_payload = PayloadParser.new(params[:payload], id)
-      status parsed_payload.status
-      body parsed_payload.body
+    post '/sources/:identifier/data' do
+      parsed_source = PayloadParser.new(params[:payload]).validate
+      # parsed_source.status
+      # body parsed_source
+    end
+
+    get '/sources/:identifier' do
+
     end
 
 
@@ -21,6 +25,8 @@ module TrafficSpy
 
     not_found do
       erb :error
+      status 403
+      "This Application Does Not Exist"
     end
   end
 end

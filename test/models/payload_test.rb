@@ -14,9 +14,9 @@ class PayloadTest < ControllerTest
                 "resolutionHeight":"1280",
                 "ip":"63.29.38.211"}'
 
-    parsed_payload = PayloadParser.new(payload, 1)
+    parsed_payload = PayloadParser.new(payload)
 
-    assert_equal "http://jumpstartlab.com/blog", parsed_payload.parse_url.url
+    assert_equal "http://jumpstartlab.com/blog", parsed_payload.parse_all
     assert_equal "2013-02-16 21:38:28 -0700", parsed_payload.parse_requested_at.requested_at
     assert_equal "37", parsed_payload.parse_responded_in.responded_in
     assert_equal "http://jumpstartlab.com", parsed_payload.parse_referred_by.referred_by

@@ -1,53 +1,39 @@
+require 'digest/sha1'
+
 class PayloadParser
-  attr_reader :parsed
 
-  def initialize(params, id)
+  def initialize(params)
     @params = params
-    @id = id
-    @parsed = JSON.parse(@params)
+
   end
 
-  def parse_url
-    @url =                TrafficSpy::Url.create(url: parsed["url"])
-  end
+  def validate
+    if @params.nil?
+      @status = 400
+      @body = "Payload cannot be empty"
+    else
+      parsed = JSON.parse(@params)
+      @payload = TrafficSpy::Payload.create({
+        url: TrafficSpy::Url.create(url: parsed["url"]),
+        requested_at: TrafficSpy::RequestedAt.create(requested_at: parsed["requestedAt"]),
+        responded_in: TrafficSpy::RespondedIn.create(responded_in: parsed["respondedIn"]),
+        referred_by: TrafficSpy::ReferredBy.create(referred_by: parsed["referredBy"]),
+        request_type: TrafficSpy::RequestType.create(request_type: parsed["requestType"]),
+        parameters: TrafficSpy::Parameters.create(parameters: parsed["parameters"]),
+        event_name: TrafficSpy::EventName.create(event_name: parsed["eventName"]),
+        user_agent: TrafficSpy::UserAgent.create(user_agent: parsed["userAgent"]),
+        resolution_width: TrafficSpy::ResolutionWidth.create(resolution_width: parsed["resolutionWidth"]),
+        resolution_height: TrafficSpy::ResolutionHeight.create(resolution_height: parsed["resolutionHeight"]),
+        ip: TrafficSpy::Ip.create(ip: parsed["ip"]),
+        sha: Digest::SHA1.hexdigest(@params)})
 
-  def parse_requested_at
-    @requested_at =        TrafficSpy::RequestedAt.create(requested_at: parsed["requestedAt"])
-  end
-
-  def parse_responded_in
-    @responded_in =       TrafficSpy::RespondedIn.create(responded_in: parsed["respondedIn"])
-  end
-
-  def parse_referred_by
-    @referred_by =        TrafficSpy::ReferredBy.create(referred_by: parsed["referredBy"])
-  end
-
-  def parse_request_type
-    @request_type =       TrafficSpy::RequestType.create(request_type: parsed["requestType"])
-  end
-
-  def parse_parameters
-    @parameters =         TrafficSpy::Parameters.create(parameters: parsed["parameters"])
-  end
-
-  def parse_event_name
-    @event_name =         TrafficSpy::EventName.create(event_name: parsed["eventName"])
-  end
-
-  def parse_user_agent
-    @user_agent =         TrafficSpy::UserAgent.create(user_agent: parsed["userAgent"])
-  end
-
-  def parse_resolution_width
-    @resolution_width =   TrafficSpy::ResolutionWidth.create(resolution_width: parsed["resolutionWidth"])
-  end
-
-  def parse_resolution_height
-    @resolution_height =  TrafficSpy::ResolutionHeight.create(resolution_height: parsed["resolutionHeight"])
-  end
-
-  def parse_ip
-    @ip =                 TrafficSpy::Ip.create(ip: parsed["ip"])
+        if @payload.save
+          @status = 200
+        else
+          @status = 403
+          @body = "This payload has already been taken"
+        end
+      self
+    end
   end
 end
